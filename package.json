@@ -11,18 +11,20 @@
   "dependencies": {
     "bcrypt": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
-    "bookshelf": "^0.13.0",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
-    "knex": "^0.14.4",
     "lodash": "^4.17.5",
-    "mongoose": "^4.13.7",
-    "mongoose-unique-validator": "^1.0.6",
-    "mysql": "^2.15.0",
+    "mysql2": "^1.5.3",
     "nodemailer": "^4.4.1",
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "sequelize": "^4.37.4",
+    "sequelize-cli": "^4.0.0",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0"
   }
 }

@@ -6,40 +6,24 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt   = require('bcrypt');
 require('dotenv').config()
 
+const sequelize = require('./models/index').sequelize
+const User = require('./models/index').User
+
 const app = express();
-
-var knex = require('knex')({
-    client: 'mysql',
-    connection: {
-        host     : process.env.DB_HOST,
-        user     : process.env.DB_USER,
-        password : process.env.DB_PASSWORD,
-        database : process.env.DB_NAME,
-        charset  : 'utf8'
-    }
-});
-var bookshelf = require('bookshelf')(knex);
-var User = bookshelf.Model.extend({
-    tableName: 'users'
-});
-var Poster = bookshelf.Model.extend({
-    tableName: 'posters'
-});
-
 
 var jwt    = require('jsonwebtoken');
 var saltRounds = 10;
 app.set('superSecret', process.env.SECRET);
+
 
 passport.use(new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password'
     },
     function(email, password, done) {
-        User.where('email',email).fetch()
+        User.findAll({ where: {email: email} })
             .then((user) => {
-                user = user.attributes;
-                console.log(email);
+                user = user[0].dataValues;
                 if (!user) {
                     return done(null, false, { message: 'Incorrect username.' });
                 }
@@ -77,10 +61,12 @@ app.use(function(req, res, next) {
 app.post('/login',
     passport.authenticate('local'),
     function(req, res) {
-        User.where('id',req.user.id).fetch().then((response) => {
-            const payload = {
-                user: response
-            };
+        console.log(req.user);
+        delete req.user.password;
+
+        const payload = {
+            user: req.user
+        };
 
         var token = jwt.sign(payload, app.get('superSecret'), {
             expiresIn: 60*60*24// expires in 24 hours
@@ -91,8 +77,8 @@ app.post('/login',
             success: true,
             token: token
         });
-    });
-    });
+    }
+);
 
 // Image POST handler.
 app.post("/images", function (req, res) {
