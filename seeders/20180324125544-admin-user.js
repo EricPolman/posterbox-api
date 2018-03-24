@@ -14,8 +14,8 @@ module.exports = {
           email: process.env.ADMIN_USER_EMAIL,
           role: 'admin',
           password: hash,
-          createdAt: Date.now(),
-          updatedAt: Date.now()
+          createdAt: '2018-01-01 00:00:00',
+          updatedAt: '2018-01-01 00:00:00'
       }], {});
   },
 
