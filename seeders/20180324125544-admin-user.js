@@ -13,7 +13,9 @@ module.exports = {
           name: process.env.ADMIN_USER_NAME,
           email: process.env.ADMIN_USER_EMAIL,
           role: 'admin',
-          password: hash
+          password: hash,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
       }], {});
   },
 
