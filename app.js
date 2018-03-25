@@ -61,7 +61,6 @@ app.use(function(req, res, next) {
 app.post('/login',
     passport.authenticate('local'),
     function(req, res) {
-        console.log(req.user);
         delete req.user.password;
 
         const payload = {
