@@ -1,3 +1,4 @@
+require('dotenv').config()
 var verifyToken = require('../verifyToken');
 var verifyAdmin = require('../verifyAdmin');
 
@@ -26,7 +27,6 @@ function isImageValid(filename, mimetype) {
 
 function upload(req, callback) {
     // The route on which the image is saved.
-    var fileRoute = "/uploads/";
 
     // Server side file path on which the image is saved.
     var saveToPath = null;
@@ -73,12 +73,10 @@ function upload(req, callback) {
         }
 
         // Generate link.
-        var randomName = sha1(new Date().getTime()) + "." + getExtension(filename);
-        link = fileRoute + randomName;
+        var link = sha1(new Date().getTime()) + "." + getExtension(filename);
 
         // Generate path where the file will be saved.
-        var appDir = path.dirname(require.main.filename);
-        saveToPath = path.join(appDir, link);
+        saveToPath = path.join(process.env.UPLOAD_PATH, link);
 
         // Pipe reader stream (file from client) into writer stream (file from disk).
         file.on("error", handleStreamError);
@@ -120,7 +118,7 @@ function upload(req, callback) {
 }
 
 module.exports = function(app) {
-    app.post("/files", function (req, res) {
+    app.post("/files", verifyToken, verifyAdmin, function (req, res) {
         upload(req, function(err, data) {
             if (err) {
                 return res.status(404).end(JSON.stringify(err));
