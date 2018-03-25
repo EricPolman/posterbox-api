@@ -92,6 +92,7 @@ app.post("/images", function (req, res) {
     });
 });
 
+const userRoutes = require('./routes/users')(app);
 var secureRoutes = express.Router();
 app.use(secureRoutes);
 app.listen(3000, () => {
