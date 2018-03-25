@@ -46,7 +46,7 @@ app.post('/login',
 
 const userRoutes = require('./routes/users')(app);
 const postersRoutes = require('./routes/posters')(app);
-const imagesRoutes = require('./routes/images')(app);
+const filesRoutes = require('./routes/files')(app);
 
 app.listen(3000, () => {
     console.log("Listening on port 3000");

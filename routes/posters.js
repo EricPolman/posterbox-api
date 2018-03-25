@@ -6,32 +6,30 @@ const verifyAdmin = require('../verifyAdmin');
 
 module.exports = function(app){
     app.get('/posters', verifyToken, function(req, res){
-        return User.all().then((users) => {
-            users.map((user) => {
-                delete user.dataValues.password;
-                return user;
+        if(req.user.role === 'admin') {
+            return Poster.all().then((posters) => {
+                res.status(200).send(posters);
             });
-            res.status(200).send(users);
-        });
+        } else {
+            return Poster.all({where: {customerId: req.user.id}}).then((posters) => {
+                res.status(200).send(posters);
+            });
+        }
     });
 
     app.post('/posters', verifyToken, verifyAdmin, function(req, res){
-        var saltRounds = 10;
-        var salt = bcrypt.genSaltSync(saltRounds);
-        var hash = bcrypt.hashSync(req.body.password, salt);
-
-        return User.create({
-            name: req.body.name,
-            email: req.body.email,
-            role: 'customer',
-            password: hash,
-        }).then(user => {
-            delete user.dataValues.password;
-            res.status(200).send(user)
+        return Poster.create({
+            title: req.body.title,
+            tags: req.body.tags,
+            thumbnail: req.body.thumbnail,
+            files: req.body.files,
+            customerId: req.body.customerId
+        }).then(poster => {
+            res.status(200).send(poster)
         });
     });
 
-    app.delete('/users/:id', verifyToken, verifyAdmin, function(req, res){
+    app.delete('/posters/:id', verifyToken, verifyAdmin, function(req, res){
         return Poster.destroy({where: {id: req.params.id}}).then(() => {
             res.status(200).send();
         });

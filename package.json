@@ -11,6 +11,7 @@
   "dependencies": {
     "bcrypt": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
+    "busboy": "^0.2.14",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
@@ -22,6 +23,8 @@
     "passport-local": "^1.0.0",
     "sequelize": "^4.37.4",
     "sequelize-cli": "^4.0.0",
+    "sha1": "^1.1.1",
+    "sharp": "^0.20.1",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
