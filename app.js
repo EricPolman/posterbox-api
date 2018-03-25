@@ -1,50 +1,15 @@
-const express = require('express');
-const _ = require('lodash');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var bcrypt   = require('bcrypt');
 require('dotenv').config()
-
-const sequelize = require('./models/index').sequelize
-const User = require('./models/index').User
-
+const express = require('express');
 const app = express();
 
 var jwt    = require('jsonwebtoken');
-var saltRounds = 10;
 app.set('superSecret', process.env.SECRET);
 
-
-passport.use(new LocalStrategy({
-        usernameField: 'email',
-        passwordField: 'password'
-    },
-    function(email, password, done) {
-        User.findAll({ where: {email: email} })
-            .then((user) => {
-                user = user[0].dataValues;
-                if (!user) {
-                    return done(null, false, { message: 'Incorrect username.' });
-                }
-                if (!bcrypt.compareSync(password, user.password)) {
-                    return done(null, false, { message: 'Incorrect password.' });
-                }
-                return done(null, user);
-            });
-    }
-));
-passport.serializeUser(function (user, done) {
-    done(null, user.id)
-});
-
-passport.deserializeUser(function (id, done) {
-    User.where('id', id).then(function (admin) {
-        done(null, admin)
-    })
-});
+var passport = require('passport');
+require('./config/passport.config')(passport);
 app.use(passport.initialize());
 
+var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(function(req, res, next) {
@@ -79,22 +44,10 @@ app.post('/login',
     }
 );
 
-// Image POST handler.
-app.post("/images", function (req, res) {
-    upload_image(req, function(err, data) {
-
-        if (err) {
-            return res.status(404).end(JSON.stringify(err));
-        }
-
-        data.link = req.protocol + '://' + req.get('hostname') + data.link;
-        res.send(data);
-    });
-});
-
 const userRoutes = require('./routes/users')(app);
-var secureRoutes = express.Router();
-app.use(secureRoutes);
+const postersRoutes = require('./routes/posters')(app);
+const imagesRoutes = require('./routes/images')(app);
+
 app.listen(3000, () => {
-    console.log("Listening");
+    console.log("Listening on port 3000");
 });

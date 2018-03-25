@@ -1,12 +1,11 @@
 const orm = require('../models/index');
-const User = orm.User;
-const bcrypt = require('bcrypt');
+const Poster = orm.Poster;
 
 const verifyToken = require('../verifyToken');
 const verifyAdmin = require('../verifyAdmin');
 
 module.exports = function(app){
-    app.get('/users', verifyToken, verifyAdmin, function(req, res){
+    app.get('/posters', verifyToken, function(req, res){
         return User.all().then((users) => {
             users.map((user) => {
                 delete user.dataValues.password;
@@ -16,7 +15,7 @@ module.exports = function(app){
         });
     });
 
-    app.post('/users', verifyToken, verifyAdmin, function(req, res){
+    app.post('/posters', verifyToken, verifyAdmin, function(req, res){
         var saltRounds = 10;
         var salt = bcrypt.genSaltSync(saltRounds);
         var hash = bcrypt.hashSync(req.body.password, salt);
@@ -33,23 +32,8 @@ module.exports = function(app){
     });
 
     app.delete('/users/:id', verifyToken, verifyAdmin, function(req, res){
-        return User.destroy({where: {id: req.params.id}}).then(() => {
+        return Poster.destroy({where: {id: req.params.id}}).then(() => {
             res.status(200).send();
-        });
-    });
-
-    app.patch('/users/:id', verifyToken, verifyAdmin, function(req, res){
-        var id = req.params.id;
-        return User.find({where: {id: id}}).then(user => {
-            if(req.body.password) {
-                var saltRounds = 10;
-                var salt = bcrypt.genSaltSync(saltRounds);
-                var hash = bcrypt.hashSync(req.body.password, salt);
-                req.body.password = hash;
-            }
-            return user.update(req.body).then((user) => {
-                res.status(200).send(user);
-            })
         });
     });
 };
