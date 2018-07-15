@@ -15,6 +15,7 @@ function getExtension(filename) {
 
 // Test if a image is valid based on its extension and mime type.
 function isImageValid(filename, mimetype) {
+    console.log(mimetype);
     var allowedExts = ["png", "pdf", "psd"];
     var allowedMimeTypes = ["image/x-png", "image/png", "application/pdf"];
 
@@ -102,6 +103,8 @@ function upload(req, callback) {
                     .then(function() {
                         return callback(null, {link: link});
                     });
+            } else {
+                callback(null, {link: link})
             }
         });
 
